@@ -1,0 +1,553 @@
+/* Name: Jianshuo Qiu
+ * UNI: jq2253
+ */
+
+——————————————————————————————
+tests for GBN:
+
+1. “-p” case:
+Sender side:
+dyn-160-39-134-253:src Platinum$ java gbnnode 1111 2222 5 -p 0.1
+node> send abcdefgh
+[1492832228.961] packet0 a sent
+[1492832228.963] packet1 b sent
+[1492832228.963] packet2 c sent
+[1492832228.964] packet3 d sent
+[1492832228.964] packet4 e sent
+[1492832228.966] packet5 f sent
+[1492832228.966] ACK0 received, window moves to 1
+[1492832228.972] ACK1 discarded
+[1492832228.972] ACK2 received, window moves to 3
+[1492832228.972] ACK3 received, window moves to 4
+[1492832228.973] ACK4 received, window moves to 5
+[1492832228.973] ACK5 received, window moves to 6
+[1492832228.973] packet6 g sent
+[1492832228.973] packet7 h sent
+[1492832228.973] ACK6 received, window moves to 7
+[1492832228.974] ACK7 received, window moves to 8
+[Summary] 1/8 packets discarded, loss rate = 0.125
+node> 
+
+Receiver side:
+dyn-160-39-134-253:src Platinum$ java gbnnode 2222 1111 5 -p 0.1
+node> [1492832228.970] packet0 a received
+[1492832228.972] ACK0 sent, expecting packet1
+[1492832228.972] packet1 b received
+[1492832228.972] ACK1 sent, expecting packet2
+[1492832228.972] packet2 c received
+[1492832228.972] ACK2 sent, expecting packet3
+[1492832228.972] packet3 d received
+[1492832228.972] ACK3 sent, expecting packet4
+[1492832228.973] packet4 e received
+[1492832228.973] ACK4 sent, expecting packet5
+[1492832228.973] packet5 f received
+[1492832228.973] ACK5 sent, expecting packet6
+[1492832228.973] packet6 g received
+[1492832228.973] ACK6 sent, expecting packet7
+[1492832228.974] packet7 h received
+[1492832228.974] ACK7 sent, expecting packet8
+[Summary] 0/8 packets discarded, loss rate = 0.000
+node> 
+
+2. “-d” case:
+Sender side:
+dyn-160-39-134-253:src Platinum$ java gbnnode 1111 2222 5 -d 3
+node> send abcdefgh
+[1492832372.537] packet0 a sent
+[1492832372.539] packet1 b sent
+[1492832372.539] packet2 c sent
+[1492832372.539] packet3 d sent
+[1492832372.539] packet4 e sent
+[1492832372.540] ACK0 received, window moves to 1
+[1492832372.540] packet5 f sent
+[1492832372.546] ACK1 received, window moves to 2
+[1492832372.547] ACK1 discarded
+[1492832372.547] ACK1 received
+[1492832372.548] packet6 g sent
+[1492832372.548] ACK1 received
+[1492832373.051] packet2 timeout
+[1492832373.052] packet2 c sent
+[1492832373.053] packet3 d sent
+[1492832373.053] packet4 e sent
+[1492832373.053] packet5 f sent
+[1492832373.053] ACK2 discarded
+[1492832373.053] packet6 g sent
+[1492832373.053] ACK2 received, window moves to 3
+[1492832373.054] ACK2 received
+[1492832373.055] packet7 h sent
+[1492832373.055] ACK2 discarded
+[1492832373.555] packet3 timeout
+[1492832373.556] packet3 d sent
+[1492832373.556] packet4 e sent
+[1492832373.557] packet5 f sent
+[1492832373.557] packet6 g sent
+[1492832373.557] ACK3 received, window moves to 4
+[1492832373.557] packet7 h sent
+[1492832373.557] ACK3 received
+[1492832373.557] ACK3 discarded
+[1492832374.061] packet4 timeout
+[1492832374.063] packet4 e sent
+[1492832374.063] packet5 f sent
+[1492832374.063] packet6 g sent
+[1492832374.063] ACK4 received, window moves to 5
+[1492832374.063] packet7 h sent
+[1492832374.064] ACK5 received, window moves to 6
+[1492832374.064] ACK5 discarded
+[1492832374.567] packet6 timeout
+[1492832374.568] packet6 g sent
+[1492832374.568] packet7 h sent
+[1492832374.568] ACK6 received, window moves to 7
+[1492832375.072] packet7 timeout
+[1492832375.073] packet7 h sent
+[1492832375.074] ACK7 received, window moves to 8
+[Summary] 5/17 packets discarded, loss rate = 0.294
+node> 
+
+Receiver side:
+dyn-160-39-134-253:src Platinum$ java gbnnode 2222 1111 5 -d 3
+node> [1492832372.545] packet0 a received
+[1492832372.546] ACK0 sent, expecting packet1
+[1492832372.546] packet1 b received
+[1492832372.546] ACK1 sent, expecting packet2
+[1492832372.546] packet2 c discarded
+[1492832372.547] packet3 d received
+[1492832372.547] ACK1 sent, expecting packet2
+[1492832372.547] packet4 e received
+[1492832372.547] ACK1 sent, expecting packet2
+[1492832372.547] packet5 f discarded
+[1492832372.548] packet6 g received
+[1492832372.548] ACK1 sent, expecting packet2
+[1492832373.053] packet2 c received
+[1492832373.053] ACK2 sent, expecting packet3
+[1492832373.053] packet3 d discarded
+[1492832373.053] packet4 e received
+[1492832373.053] ACK2 sent, expecting packet3
+[1492832373.053] packet5 f received
+[1492832373.054] ACK2 sent, expecting packet3
+[1492832373.054] packet6 g discarded
+[1492832373.055] packet7 h received
+[1492832373.055] ACK2 sent, expecting packet3
+[1492832373.557] packet3 d received
+[1492832373.557] ACK3 sent, expecting packet4
+[1492832373.557] packet4 e discarded
+[1492832373.557] packet5 f received
+[1492832373.557] ACK3 sent, expecting packet4
+[1492832373.557] packet6 g received
+[1492832373.557] ACK3 sent, expecting packet4
+[1492832373.557] packet7 h discarded
+[1492832374.063] packet4 e received
+[1492832374.063] ACK4 sent, expecting packet5
+[1492832374.063] packet5 f received
+[1492832374.064] ACK5 sent, expecting packet6
+[1492832374.064] packet6 g discarded
+[1492832374.064] packet7 h received
+[1492832374.064] ACK5 sent, expecting packet6
+[1492832374.568] packet6 g received
+[1492832374.569] ACK6 sent, expecting packet7
+[1492832374.569] packet7 h discarded
+[1492832375.074] packet7 h received
+[1492832375.074] ACK7 sent, expecting packet8
+[Summary] 8/25 packets discarded, loss rate = 0.320
+node> 
+
+——————————————————————————————
+tests for DV:
+Node1:
+dyn-160-39-134-253:src Platinum$ java dvnode 1111 2222 .1 3333 .5
+[1492832499.667] Message received at Node 1111 from Node 3333
+[1492832499.674] Node 1111 Routing Table
+- (.5) -> Node 3333
+- (.1) -> Node 2222
+- (1.0) -> Node 4444; Next hop -> Node 3333
+[1492832499.675] Message sent from Node 1111 to Node 3333
+[1492832499.675] Message sent from Node 1111 to Node 2222
+[1492832499.676] Message received at Node 1111 from Node 2222
+[1492832499.676] Node 1111 Routing Table
+- (.3) -> Node 3333; Next hop -> Node 2222
+- (.1) -> Node 2222
+- (.9) -> Node 4444; Next hop -> Node 2222
+[1492832499.676] Message sent from Node 1111 to Node 3333
+[1492832499.676] Message sent from Node 1111 to Node 2222
+[1492832499.676] Message received at Node 1111 from Node 3333
+[1492832499.677] Message received at Node 1111 from Node 2222
+[1492832499.677] Node 1111 Routing Table
+- (.3) -> Node 3333; Next hop -> Node 2222
+- (.1) -> Node 2222
+- (.8) -> Node 4444; Next hop -> Node 2222
+[1492832499.677] Message sent from Node 1111 to Node 3333
+[1492832499.677] Message sent from Node 1111 to Node 2222
+
+Node2:
+dyn-160-39-134-253:src Platinum$ java dvnode 2222 1111 .1 3333 .2 4444 .8
+[1492832499.648] Message received at Node 2222 from Node 4444
+[1492832499.657] Node 2222 Routing Table
+- (.2) -> Node 3333
+- (.1) -> Node 1111
+- (.8) -> Node 4444
+[1492832499.659] Message sent from Node 2222 to Node 3333
+[1492832499.659] Message sent from Node 2222 to Node 1111
+[1492832499.660] Message sent from Node 2222 to Node 4444
+[1492832499.660] Message received at Node 2222 from Node 3333
+[1492832499.660] Node 2222 Routing Table
+- (.2) -> Node 3333
+- (.1) -> Node 1111
+- (.7) -> Node 4444; Next hop -> Node 3333
+[1492832499.660] Message sent from Node 2222 to Node 3333
+[1492832499.660] Message sent from Node 2222 to Node 1111
+[1492832499.660] Message sent from Node 2222 to Node 4444
+[1492832499.661] Message received at Node 2222 from Node 4444
+[1492832499.661] Message received at Node 2222 from Node 3333
+[1492832499.661] Message received at Node 2222 from Node 4444
+[1492832499.661] Message received at Node 2222 from Node 4444
+[1492832499.675] Message received at Node 2222 from Node 1111
+[1492832499.676] Message received at Node 2222 from Node 1111
+[1492832499.677] Message received at Node 2222 from Node 1111
+
+Node3:
+dyn-160-39-134-253:src Platinum$ java dvnode 3333 1111 .5 2222 .2 4444 .5
+[1492832499.648] Message received at Node 3333 from Node 4444
+[1492832499.657] Node 3333 Routing Table
+- (.5) -> Node 1111
+- (.5) -> Node 4444
+- (.2) -> Node 2222
+[1492832499.658] Message sent from Node 3333 to Node 1111
+[1492832499.658] Message sent from Node 3333 to Node 4444
+[1492832499.659] Message sent from Node 3333 to Node 2222
+[1492832499.659] Message received at Node 3333 from Node 2222
+[1492832499.660] Node 3333 Routing Table
+- (.3) -> Node 1111; Next hop -> Node 2222
+- (.5) -> Node 4444
+- (.2) -> Node 2222
+[1492832499.660] Message sent from Node 3333 to Node 1111
+[1492832499.660] Message sent from Node 3333 to Node 4444
+[1492832499.660] Message sent from Node 3333 to Node 2222
+[1492832499.660] Message received at Node 3333 from Node 4444
+[1492832499.661] Message received at Node 3333 from Node 2222
+[1492832499.661] Message received at Node 3333 from Node 4444
+[1492832499.661] Message received at Node 3333 from Node 4444
+[1492832499.675] Message received at Node 3333 from Node 1111
+[1492832499.676] Message received at Node 3333 from Node 1111
+[1492832499.677] Message received at Node 3333 from Node 1111
+
+Node4:
+dyn-160-39-134-253:src Platinum$ java dvnode 4444 2222 .8 3333 .5 last
+[1492832499.630] Node 4444 Routing Table
+- (.5) -> Node 3333
+- (.8) -> Node 2222
+[1492832499.638] Message sent from Node 4444 to Node 3333
+[1492832499.638] Message sent from Node 4444 to Node 2222
+[1492832499.659] Message received at Node 4444 from Node 3333
+[1492832499.659] Node 4444 Routing Table
+- (.5) -> Node 3333
+- (.7) -> Node 2222; Next hop -> Node 3333
+- (1.0) -> Node 1111; Next hop -> Node 3333
+[1492832499.660] Message sent from Node 4444 to Node 3333
+[1492832499.660] Message sent from Node 4444 to Node 2222
+[1492832499.660] Message received at Node 4444 from Node 2222
+[1492832499.660] Node 4444 Routing Table
+- (.5) -> Node 3333
+- (.7) -> Node 2222; Next hop -> Node 3333
+- (.9) -> Node 1111; Next hop -> Node 2222
+[1492832499.660] Message sent from Node 4444 to Node 3333
+[1492832499.660] Message sent from Node 4444 to Node 2222
+[1492832499.660] Message received at Node 4444 from Node 3333
+[1492832499.661] Node 4444 Routing Table
+- (.5) -> Node 3333
+- (.7) -> Node 2222; Next hop -> Node 3333
+- (.8) -> Node 1111; Next hop -> Node 3333
+[1492832499.661] Message sent from Node 4444 to Node 3333
+[1492832499.661] Message sent from Node 4444 to Node 2222
+[1492832499.661] Message received at Node 4444 from Node 2222
+
+——————————————————————————————
+tests for CN:
+Node1:
+dyn-160-39-134-253:src Platinum$ java cnnode 1111 receive send 2222 3333
+[1492832686.017] Message received at Node 1111 from Node 3333
+[1492832686.025] Node 1111 Routing Table
+- (.0) -> Node 3333
+- (.0) -> Node 2222; Next hop -> Node 3333
+- (.0) -> Node 4444; Next hop -> Node 3333
+[1492832686.026] Message sent from Node 1111 to Node 3333
+[1492832686.026] Message sent from Node 1111 to Node 2222
+[1492832686.026] Message received at Node 1111 from Node 2222
+[1492832687.045] Link to 2222: 22 packets sent, 3 packets lost, loss rate 0.14
+[1492832687.047] Link to 3333: 11 packets sent, 8 packets lost, loss rate 0.73
+[1492832688.049] Link to 2222: 60 packets sent, 6 packets lost, loss rate 0.1
+[1492832688.049] Link to 3333: 23 packets sent, 15 packets lost, loss rate 0.65
+[1492832689.051] Link to 2222: 107 packets sent, 9 packets lost, loss rate 0.08
+[1492832689.051] Link to 3333: 34 packets sent, 19 packets lost, loss rate 0.56
+[1492832690.052] Link to 2222: 142 packets sent, 12 packets lost, loss rate 0.08
+[1492832690.052] Link to 3333: 46 packets sent, 25 packets lost, loss rate 0.54
+[1492832691.045] Message sent from Node 1111 to Node 3333
+[1492832691.045] Message sent from Node 1111 to Node 2222
+[1492832691.045] Node 1111 Routing Table
+- (.08) -> Node 3333; Next hop -> Node 2222
+- (.08) -> Node 2222
+- (.08) -> Node 4444; Next hop -> Node 2222
+[1492832691.046] Message received at Node 1111 from Node 2222
+[1492832691.046] Node 1111 Routing Table
+- (.24) -> Node 3333; Next hop -> Node 2222
+- (.08) -> Node 2222
+- (.24) -> Node 4444; Next hop -> Node 2222
+[1492832691.047] Message sent from Node 1111 to Node 3333
+[1492832691.047] Message sent from Node 1111 to Node 2222
+[1492832691.047] Message received at Node 1111 from Node 3333
+[1492832691.048] Message received at Node 1111 from Node 2222
+[1492832691.048] Node 1111 Routing Table
+- (.35) -> Node 3333; Next hop -> Node 2222
+- (.08) -> Node 2222
+- (.4) -> Node 4444; Next hop -> Node 2222
+[1492832691.048] Message sent from Node 1111 to Node 3333
+[1492832691.048] Message sent from Node 1111 to Node 2222
+[1492832691.048] Message received at Node 1111 from Node 3333
+[1492832691.049] Message received at Node 1111 from Node 2222
+[1492832691.049] Node 1111 Routing Table
+- (.35) -> Node 3333; Next hop -> Node 2222
+- (.08) -> Node 2222
+- (.56) -> Node 4444; Next hop -> Node 2222
+[1492832691.049] Message sent from Node 1111 to Node 3333
+[1492832691.050] Message sent from Node 1111 to Node 2222
+[1492832691.050] Message received at Node 1111 from Node 2222
+[1492832691.050] Node 1111 Routing Table
+- (.35) -> Node 3333; Next hop -> Node 2222
+- (.08) -> Node 2222
+- (.72) -> Node 4444; Next hop -> Node 2222
+[1492832691.051] Message sent from Node 1111 to Node 3333
+[1492832691.051] Message sent from Node 1111 to Node 2222
+[1492832691.051] Message received at Node 1111 from Node 2222
+[1492832691.052] Node 1111 Routing Table
+- (.35) -> Node 3333; Next hop -> Node 2222
+- (.08) -> Node 2222
+- (.87) -> Node 4444; Next hop -> Node 2222
+[1492832691.052] Message sent from Node 1111 to Node 3333
+[1492832691.052] Message sent from Node 1111 to Node 2222
+[1492832691.056] Link to 2222: 169 packets sent, 14 packets lost, loss rate 0.08
+[1492832691.056] Link to 3333: 56 packets sent, 34 packets lost, loss rate 0.61
+[1492832692.060] Link to 2222: 176 packets sent, 17 packets lost, loss rate 0.1
+[1492832692.060] Link to 3333: 65 packets sent, 38 packets lost, loss rate 0.58
+[1492832693.065] Link to 2222: 193 packets sent, 18 packets lost, loss rate 0.09
+[1492832693.065] Link to 3333: 77 packets sent, 45 packets lost, loss rate 0.58
+[1492832694.069] Link to 2222: 204 packets sent, 21 packets lost, loss rate 0.1
+[1492832694.069] Link to 3333: 86 packets sent, 49 packets lost, loss rate 0.57
+
+Node2:
+dyn-160-39-134-253:src Platinum$ java cnnode 2222 receive 1111 .1 send 3333 4444
+[1492832686.001] Message received at Node 2222 from Node 4444
+[1492832686.008] Node 2222 Routing Table
+- (.0) -> Node 3333
+- (.0) -> Node 1111
+- (.0) -> Node 4444
+[1492832686.009] Message sent from Node 2222 to Node 3333
+[1492832686.009] Message sent from Node 2222 to Node 1111
+[1492832686.009] Message sent from Node 2222 to Node 4444
+[1492832686.009] Message received at Node 2222 from Node 3333
+[1492832686.010] Message received at Node 2222 from Node 4444
+[1492832686.026] Message received at Node 2222 from Node 1111
+[1492832687.034] Link to 3333: 21 packets sent, 4 packets lost, loss rate 0.19
+[1492832687.036] Link to 4444: 10 packets sent, 9 packets lost, loss rate 0.9
+[1492832688.038] Link to 3333: 37 packets sent, 9 packets lost, loss rate 0.24
+[1492832688.038] Link to 4444: 21 packets sent, 19 packets lost, loss rate 0.9
+[1492832689.042] Link to 3333: 56 packets sent, 11 packets lost, loss rate 0.2
+[1492832689.042] Link to 4444: 31 packets sent, 28 packets lost, loss rate 0.9
+[1492832690.046] Link to 3333: 72 packets sent, 17 packets lost, loss rate 0.24
+[1492832690.046] Link to 4444: 42 packets sent, 35 packets lost, loss rate 0.83
+[1492832691.045] Message received at Node 2222 from Node 1111
+[1492832691.046] Node 2222 Routing Table
+- (.16) -> Node 3333; Next hop -> Node 1111
+- (.08) -> Node 1111
+- (.16) -> Node 4444; Next hop -> Node 1111
+[1492832691.046] Message sent from Node 2222 to Node 3333
+[1492832691.046] Message sent from Node 2222 to Node 1111
+[1492832691.046] Message sent from Node 2222 to Node 4444
+[1492832691.047] Message received at Node 2222 from Node 3333
+[1492832691.047] Message received at Node 2222 from Node 1111
+[1492832691.047] Node 2222 Routing Table
+- (.27) -> Node 3333
+- (.08) -> Node 1111
+- (.32) -> Node 4444; Next hop -> Node 1111
+[1492832691.048] Message sent from Node 2222 to Node 3333
+[1492832691.048] Message sent from Node 2222 to Node 1111
+[1492832691.048] Message sent from Node 2222 to Node 4444
+[1492832691.048] Message received at Node 2222 from Node 1111
+[1492832691.049] Node 2222 Routing Table
+- (.27) -> Node 3333
+- (.08) -> Node 1111
+- (.48) -> Node 4444; Next hop -> Node 1111
+[1492832691.049] Message sent from Node 2222 to Node 3333
+[1492832691.049] Message sent from Node 2222 to Node 1111
+[1492832691.049] Message sent from Node 2222 to Node 4444
+[1492832691.049] Message received at Node 2222 from Node 3333
+[1492832691.049] Message received at Node 2222 from Node 4444
+[1492832691.050] Message received at Node 2222 from Node 1111
+[1492832691.050] Node 2222 Routing Table
+- (.27) -> Node 3333
+- (.08) -> Node 1111
+- (.64) -> Node 4444; Next hop -> Node 1111
+[1492832691.050] Message sent from Node 2222 to Node 3333
+[1492832691.050] Message sent from Node 2222 to Node 1111
+[1492832691.050] Link to 3333: 83 packets sent, 22 packets lost, loss rate 0.27
+[1492832691.050] Message sent from Node 2222 to Node 4444
+[1492832691.050] Link to 4444: 52 packets sent, 41 packets lost, loss rate 0.79
+[1492832691.051] Message received at Node 2222 from Node 1111
+[1492832691.051] Node 2222 Routing Table
+- (.27) -> Node 3333
+- (.08) -> Node 1111
+- (.79) -> Node 4444
+[1492832691.051] Message sent from Node 2222 to Node 3333
+[1492832691.051] Message sent from Node 2222 to Node 1111
+[1492832691.052] Message sent from Node 2222 to Node 4444
+[1492832691.052] Message received at Node 2222 from Node 1111
+[1492832692.054] Link to 3333: 89 packets sent, 24 packets lost, loss rate 0.27
+[1492832692.055] Link to 4444: 61 packets sent, 45 packets lost, loss rate 0.74
+[1492832693.059] Link to 3333: 108 packets sent, 29 packets lost, loss rate 0.27
+[1492832693.059] Link to 4444: 72 packets sent, 55 packets lost, loss rate 0.76
+[1492832694.063] Link to 3333: 133 packets sent, 34 packets lost, loss rate 0.25
+[1492832694.064] Link to 4444: 82 packets sent, 62 packets lost, loss rate 0.76
+[1492832695.067] Link to 3333: 164 packets sent, 36 packets lost, loss rate 0.22
+[1492832695.068] Link to 4444: 92 packets sent, 72 packets lost, loss rate 0.78
+[1492832696.037] Message sent from Node 2222 to Node 3333
+[1492832696.037] Message sent from Node 2222 to Node 1111
+[1492832696.037] Message sent from Node 2222 to Node 4444
+[1492832696.037] Node 2222 Routing Table
+- (.22) -> Node 3333
+- (.08) -> Node 1111
+- (.78) -> Node 4444
+[1492832696.038] Message received at Node 2222 from Node 3333
+[1492832696.038] Node 2222 Routing Table
+- (.22) -> Node 3333
+- (.08) -> Node 1111
+- (.77) -> Node 4444; Next hop -> Node 3333
+[1492832696.038] Message sent from Node 2222 to Node 3333
+[1492832696.038] Message sent from Node 2222 to Node 1111
+[1492832696.039] Message sent from Node 2222 to Node 4444
+[1492832696.039] Message received at Node 2222 from Node 3333
+[1492832696.039] Message received at Node 2222 from Node 4444
+[1492832696.039] Message received at Node 2222 from Node 4444
+[1492832696.040] Message received at Node 2222 from Node 4444
+[1492832696.072] Link to 3333: 180 packets sent, 40 packets lost, loss rate 0.22
+[1492832696.072] Link to 4444: 100 packets sent, 78 packets lost, loss rate 0.78
+
+Node3:
+dyn-160-39-134-253:src Platinum$ java cnnode 3333 receive 1111 .5 2222 .2 send 4444
+[1492832686.000] Message received at Node 3333 from Node 4444
+[1492832686.008] Node 3333 Routing Table
+- (.0) -> Node 1111
+- (.0) -> Node 4444
+- (.0) -> Node 2222; Next hop -> Node 4444
+[1492832686.009] Message sent from Node 3333 to Node 1111
+[1492832686.009] Message sent from Node 3333 to Node 4444
+[1492832686.009] Message sent from Node 3333 to Node 2222
+[1492832686.009] Message received at Node 3333 from Node 2222
+[1492832686.010] Message received at Node 3333 from Node 4444
+[1492832686.026] Message received at Node 3333 from Node 1111
+[1492832687.034] Link to 4444: 11 packets sent, 7 packets lost, loss rate 0.64
+[1492832688.038] Link to 4444: 21 packets sent, 11 packets lost, loss rate 0.52
+[1492832689.042] Link to 4444: 33 packets sent, 16 packets lost, loss rate 0.48
+[1492832690.046] Link to 4444: 43 packets sent, 25 packets lost, loss rate 0.58
+[1492832691.045] Message received at Node 3333 from Node 1111
+[1492832691.046] Message received at Node 3333 from Node 2222
+[1492832691.046] Node 3333 Routing Table
+- (.35) -> Node 1111; Next hop -> Node 2222
+- (.43) -> Node 4444; Next hop -> Node 2222
+- (.27) -> Node 2222
+[1492832691.046] Message sent from Node 3333 to Node 1111
+[1492832691.046] Message sent from Node 3333 to Node 4444
+[1492832691.047] Message sent from Node 3333 to Node 2222
+[1492832691.047] Message received at Node 3333 from Node 1111
+[1492832691.048] Message received at Node 3333 from Node 2222
+[1492832691.048] Node 3333 Routing Table
+- (.35) -> Node 1111; Next hop -> Node 2222
+- (.58) -> Node 4444
+- (.27) -> Node 2222
+[1492832691.048] Message sent from Node 3333 to Node 1111
+[1492832691.048] Message sent from Node 3333 to Node 4444
+[1492832691.048] Message sent from Node 3333 to Node 2222
+[1492832691.048] Message received at Node 3333 from Node 1111
+[1492832691.049] Message received at Node 3333 from Node 4444
+[1492832691.049] Message received at Node 3333 from Node 2222
+[1492832691.050] Message received at Node 3333 from Node 1111
+[1492832691.050] Message received at Node 3333 from Node 2222
+[1492832691.050] Link to 4444: 55 packets sent, 32 packets lost, loss rate 0.58
+[1492832691.051] Message received at Node 3333 from Node 1111
+[1492832691.051] Message received at Node 3333 from Node 2222
+[1492832691.052] Message received at Node 3333 from Node 1111
+[1492832692.054] Link to 4444: 62 packets sent, 36 packets lost, loss rate 0.58
+[1492832693.059] Link to 4444: 76 packets sent, 46 packets lost, loss rate 0.61
+[1492832694.063] Link to 4444: 90 packets sent, 51 packets lost, loss rate 0.57
+[1492832695.067] Link to 4444: 101 packets sent, 57 packets lost, loss rate 0.56
+[1492832696.037] Message received at Node 3333 from Node 2222
+[1492832696.037] Message sent from Node 3333 to Node 1111
+[1492832696.037] Node 3333 Routing Table
+[1492832696.037] Message sent from Node 3333 to Node 4444
+- (.3) -> Node 1111; Next hop -> Node 2222
+[1492832696.038] Message sent from Node 3333 to Node 2222
+- (.55) -> Node 4444
+- (.22) -> Node 2222
+[1492832696.038] Node 3333 Routing Table
+- (.3) -> Node 1111[1492832696.038] Message sent from Node 3333 to Node 1111
+; Next hop -> Node 2222
+[1492832696.038] Message sent from Node 3333 to Node 4444
+- (.55) -> Node 4444
+[1492832696.038] Message sent from Node 3333 to Node 2222
+- (.22) -> Node 2222
+[1492832696.038] Message received at Node 3333 from Node 4444
+[1492832696.039] Message received at Node 3333 from Node 2222
+[1492832696.039] Message received at Node 3333 from Node 4444
+[1492832696.040] Message received at Node 3333 from Node 4444
+[1492832696.072] Link to 4444: 109 packets sent, 60 packets lost, loss rate 0.55
+[1492832697.075] Link to 4444: 119 packets sent, 65 packets lost, loss rate 0.55
+[1492832698.080] Link to 4444: 133 packets sent, 73 packets lost, loss rate 0.55
+
+Node4:
+dyn-160-39-134-253:src Platinum$ java cnnode 4444 receive 2222 .8 3333 .5 send last
+[1492832685.983] Node 4444 Routing Table
+- (.0) -> Node 3333
+- (.0) -> Node 2222
+[1492832685.990] Message sent from Node 4444 to Node 3333
+[1492832685.991] Message sent from Node 4444 to Node 2222
+[1492832686.010] Message received at Node 4444 from Node 3333
+[1492832686.010] Node 4444 Routing Table
+- (.0) -> Node 3333
+- (.0) -> Node 2222; Next hop -> Node 3333
+- (.0) -> Node 1111; Next hop -> Node 3333
+[1492832686.010] Message sent from Node 4444 to Node 3333
+[1492832686.010] Message sent from Node 4444 to Node 2222
+[1492832686.010] Message received at Node 4444 from Node 2222
+[1492832691.046] Message received at Node 4444 from Node 2222
+[1492832691.047] Message received at Node 4444 from Node 3333
+[1492832691.048] Node 4444 Routing Table
+- (.58) -> Node 3333
+- (.79) -> Node 2222
+- (.87) -> Node 1111; Next hop -> Node 2222
+[1492832691.048] Message sent from Node 4444 to Node 3333
+[1492832691.048] Message sent from Node 4444 to Node 2222
+[1492832691.049] Message received at Node 4444 from Node 2222
+[1492832691.049] Message received at Node 4444 from Node 3333
+[1492832691.049] Message received at Node 4444 from Node 2222
+[1492832691.050] Message received at Node 4444 from Node 2222
+[1492832691.052] Message received at Node 4444 from Node 2222
+[1492832696.037] Message received at Node 4444 from Node 2222
+[1492832696.038] Node 4444 Routing Table
+- (.58) -> Node 3333
+- (.78) -> Node 2222
+- (.86) -> Node 1111; Next hop -> Node 2222
+[1492832696.038] Message sent from Node 4444 to Node 3333
+[1492832696.038] Message sent from Node 4444 to Node 2222
+[1492832696.038] Message received at Node 4444 from Node 3333
+[1492832696.039] Node 4444 Routing Table
+- (.55) -> Node 3333
+- (.78) -> Node 2222
+- (.86) -> Node 1111; Next hop -> Node 2222
+[1492832696.039] Message sent from Node 4444 to Node 3333
+[1492832696.039] Message sent from Node 4444 to Node 2222
+[1492832696.039] Message received at Node 4444 from Node 3333
+[1492832696.039] Node 4444 Routing Table
+- (.55) -> Node 3333
+- (.77) -> Node 2222; Next hop -> Node 3333
+- (.85) -> Node 1111; Next hop -> Node 3333
+[1492832696.040] Message sent from Node 4444 to Node 3333
+[1492832696.040] Message sent from Node 4444 to Node 2222
+[1492832696.040] Message received at Node 4444 from Node 2222
+
+End of tests.
